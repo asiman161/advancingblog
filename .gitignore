@@ -1,0 +1,10 @@
+/.idea
+*.log
+/src/db.sqlite3
+/bin
+/include
+/lib
+/pip-selfcheck.json
+__pycache__
+/media_cdn
+/static_cdn
