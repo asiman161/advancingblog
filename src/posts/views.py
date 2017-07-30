@@ -1,5 +1,4 @@
 from django.contrib import messages
-from django.contrib.contenttypes.models import ContentType
 from django.http import HttpResponseRedirect, Http404
 from django.db.models import Q
 from django.shortcuts import render, get_object_or_404, redirect
@@ -33,9 +32,7 @@ def post_detail(request, slug=None):
     if instance.draft or instance.publish > timezone.now().date():
         if not request.user.is_staff or not request.user.is_superuser:
             raise Http404
-    content_type = ContentType.objects.get_for_model(Post)
-    obj_id = instance.id
-    comments = Comment.objects.filter(content_type=content_type, object_id=obj_id)
+    comments = instance.comments  # <- best option <- but we can do that -> Comment.objects.filter_by_instance(instance)
     context = {
         'title': instance.title,
         'instance': instance,
