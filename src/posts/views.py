@@ -1,10 +1,12 @@
 from django.contrib import messages
+from django.contrib.contenttypes.models import ContentType
 from django.http import HttpResponseRedirect, Http404
 from django.db.models import Q
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.utils import timezone
 
+from comments.forms import CommentForm
 from comments.models import Comment
 from .forms import PostForm
 from .models import Post
@@ -32,11 +34,32 @@ def post_detail(request, slug=None):
     if instance.draft or instance.publish > timezone.now().date():
         if not request.user.is_staff or not request.user.is_superuser:
             raise Http404
+
+    initial_data = {
+        'content_type': instance.get_content_type,
+        'object_id': instance.id
+    }
+    form = CommentForm(request.POST or None, initial=initial_data)
+    if form.is_valid():
+        c_type = form.cleaned_data.get('content_type')
+        content_type = ContentType.objects.get(model=c_type)
+        object_id = form.cleaned_data.get('object_id')
+        content_data = form.cleaned_data.get('content')
+        new_comment, created = Comment.objects.get_or_create(
+            user=request.user,
+            content_type=content_type,
+            object_id=object_id,
+            content=content_data
+        )
+        if created:
+            print('it\'s works')
+
     comments = instance.comments  # <- best option <- but we can do that -> Comment.objects.filter_by_instance(instance)
     context = {
         'title': instance.title,
         'instance': instance,
-        'comments': comments
+        'comments': comments,
+        'comment_form': form,
     }
     return render(request, 'post_detail.html', context)
 
