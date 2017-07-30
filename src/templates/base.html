@@ -15,6 +15,8 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
           integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css">
+
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
     <style>
         {% block style %}{% endblock style %}
@@ -62,6 +64,11 @@
 
         let contentInput = $('#id_content');
 
+        let titleInput = $('#id_title');
+
+        function setTitle(value) {
+            $('#preview-title').text(value);
+        }
 
         function setContent(value) {
             let markedContent = marked(value);
@@ -71,23 +78,22 @@
             });
         }
 
-        let titleInput = $('#id_title');
+        if (titleInput.val()) {
+            setTitle(titleInput.val());
 
-        function setTitle(value) {
-            $('#preview-title').text(value);
+            titleInput.keyup(function () {
+                setTitle($(this).val());
+            });
         }
 
-        setTitle(titleInput.val());
+        if (contentInput.val()) {
+            setContent(contentInput.val());
 
-        setContent(contentInput.val());
+            contentInput.keyup(function () {
+                setContent($(this).val());
+            });
+        }
 
-        contentInput.keyup(function () {
-            setContent($(this).val());
-        });
-
-        titleInput.keyup(function () {
-            setTitle($(this).val());
-        });
 
         // preview_title
         // preview_content
