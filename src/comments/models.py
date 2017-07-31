@@ -3,12 +3,14 @@ from __future__ import unicode_literals
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+from django.core.urlresolvers import reverse
 from django.db import models
 
 
 class CommentManager(models.Manager):
     def all(self):
         qs = super(CommentManager, self).filter(parent=None)
+        return qs
 
     def filter_by_instance(self, instance):
         content_type = ContentType.objects.get_for_model(instance.__class__)
@@ -37,6 +39,9 @@ class Comment(models.Model):
 
     def __str__(self):
         return str(self.user.username)
+
+    def get_absolute_url(self):
+        return reverse('comments:thread', kwargs={'id': self.id})
 
     def children(self):  # replies
         return Comment.objects.filter(parent=self)
