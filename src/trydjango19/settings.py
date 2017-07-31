@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'pagedown',
 
     #local
+    'accounts',
     'comments',
     'posts',
 ]
